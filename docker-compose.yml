@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: absensi_operator_app
+    restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
@@ -18,6 +19,7 @@ services:
   db:
     image: mysql:8.0
     container_name: absensi_operator_db
+    restart: unless-stopped
     ports:
       - "3306:3306"
     environment:
