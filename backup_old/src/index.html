@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplikasi Rekapitulasi Absensi Operator</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="light-theme">
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <i class="bi bi-person-check-fill logo-icon"></i>
+        <span class="logo-text">Absensi<span>Operator</span></span>
+      </div>
+      <button class="btn btn-sm btn-link d-md-none text-white fs-4" id="close-sidebar">
+        <i class="bi bi-x"></i>
+      </button>
+    </div>
+    
+    <nav class="sidebar-nav">
+      <a href="#dashboard" class="nav-item active" data-page="dashboard">
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="#operator" class="nav-item" data-page="operator">
+        <i class="bi bi-people-fill"></i>
+        <span>Master Operator</span>
+      </a>
+      <a href="#entry" class="nav-item" data-page="entry">
+        <i class="bi bi-calendar-plus-fill"></i>
+        <span>Entry Absensi</span>
+      </a>
+      <a href="#rekap" class="nav-item" data-page="rekap">
+        <i class="bi bi-file-earmark-bar-graph-fill"></i>
+        <span>Rekap & Laporan</span>
+      </a>
+      <a href="#periode" class="nav-item" data-page="periode">
+        <i class="bi bi-calendar-range-fill"></i>
+        <span>Kelola Periode</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="theme-toggle">
+        <i class="bi bi-sun-fill" id="theme-icon-light"></i>
+        <div class="form-check form-switch m-0">
+          <input class="form-check-input" type="checkbox" role="switch" id="theme-switch">
+        </div>
+        <i class="bi bi-moon-stars-fill text-muted" id="theme-icon-dark"></i>
+      </div>
+      <div class="footer-info mt-3 text-center">
+        <small class="text-muted d-block">&copy; 2026 PT PLN (Persero)</small>
+        <small class="text-muted-xs text-muted">v1.0.0 — GAS App</small>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Sidebar Overlay for Mobile -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- Main Content Wrapper -->
+  <div class="content-wrapper">
+    <!-- Top Header -->
+    <header class="topbar">
+      <div class="container-fluid d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <button class="btn btn-link px-0 me-3 d-md-none text-dark fs-3" id="toggle-sidebar">
+            <i class="bi bi-list"></i>
+          </button>
+          <div class="header-title">
+            <h1 class="h4 m-0" id="page-title">Dashboard</h1>
+            <p class="text-muted m-0 d-none d-sm-block" id="page-subtitle">Ringkasan kondisi absensi operator</p>
+          </div>
+        </div>
+        
+        <div class="topbar-actions d-flex align-items-center gap-3">
+          <!-- Active Period Badge -->
+          <div class="badge-period shadow-sm" id="active-period-badge">
+            <i class="bi bi-calendar3 text-primary"></i>
+            <div class="text-start">
+              <span class="d-block text-muted-xs">Periode Aktif</span>
+              <strong class="d-block text-dark-sm" id="current-period-display">Loading...</strong>
+            </div>
+          </div>
+          
+          <div class="date-today text-end d-none d-lg-block">
+            <span class="d-block text-muted-xs">Hari Ini</span>
+            <strong class="d-block text-dark-sm" id="today-date-display">...</strong>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Dynamic Main Content Area -->
+    <main class="main-content" id="app-content">
+      <!-- Loading Skeleton initially -->
+      <div class="py-5 text-center" id="initial-loading">
+        <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3 text-muted">Memuat aplikasi, mohon tunggu...</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal: Tambah/Edit Operator -->
+  <div class="modal fade" id="modalOperator" tabindex="-1" aria-labelledby="modalOperatorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title" id="modalOperatorLabel">Tambah Operator</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form id="form-operator">
+          <div class="modal-body py-4">
+            <input type="hidden" id="op-id" name="ID_Operator">
+            
+            <div class="mb-3">
+              <label for="op-nama" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="op-nama" name="Nama" required placeholder="Contoh: John Doe">
+              <div class="invalid-feedback" id="op-nama-feedback">Nama tidak boleh kosong</div>
+            </div>
+            
+            <div class="mb-3">
+              <label for="op-unit" class="form-label">Unit Kerja <span class="text-danger">*</span></label>
+              <select class="form-select" id="op-unit" name="Unit" required>
+                <option value="" disabled selected>Pilih Unit...</option>
+                <option value="BTG">BTG (Boiler Turbine Generator)</option>
+                <option value="C&AHS">C&AHS (Chemical & Ash Handling System)</option>
+                <option value="Power Distribution">Power Distribution</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="op-grup" class="form-label">Grup Shift <span class="text-danger">*</span></label>
+              <select class="form-select" id="op-grup" name="Grup_Shift" required>
+                <option value="" disabled selected>Pilih Grup...</option>
+                <option value="A">Grup A</option>
+                <option value="B">Grup B</option>
+                <option value="C">Grup C</option>
+                <option value="D">Grup D</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="op-status" class="form-label">Status <span class="text-danger">*</span></label>
+              <select class="form-select" id="op-status" name="Status" required>
+                <option value="Aktif" selected>Aktif</option>
+                <option value="Nonaktif">Nonaktif</option>
+              </select>
+            </div>
+            
+            <div class="mb-3">
+              <label for="op-tgl-masuk" class="form-label">Tanggal Masuk</label>
+              <input type="date" class="form-control" id="op-tgl-masuk" name="Tanggal_Masuk">
+            </div>
+            
+            <div class="mb-3">
+              <label for="op-ket" class="form-label">Keterangan Tambahan</label>
+              <textarea class="form-control" id="op-ket" name="Keterangan" rows="2" placeholder="Catatan opsional..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-top-0 pt-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+            <button type="submit" class="btn btn-primary" id="btn-save-operator">Simpan</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Upload Bulk Absensi -->
+  <div class="modal fade" id="modalUpload" tabindex="-1" aria-labelledby="modalUploadLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header border-bottom-0 pb-0">
+          <h5 class="modal-title" id="modalUploadLabel">Upload Absensi Bulk</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-4">
+          <!-- Step 1: Download Template and Upload -->
+          <div id="upload-step-1">
+            <p class="text-muted">Gunakan template Excel (.xlsx) atau CSV untuk mengunggah absensi operator secara massal untuk periode aktif.</p>
+            
+            <div class="d-flex align-items-center justify-content-between p-3 bg-light rounded mb-4">
+              <div class="d-flex align-items-center gap-3">
+                <i class="bi bi-file-earmark-excel-fill text-success fs-2"></i>
+                <div>
+                  <strong class="d-block">Template Absensi</strong>
+                  <span class="text-muted text-xs">Unduh format template untuk diisi.</span>
+                </div>
+              </div>
+              <button class="btn btn-outline-success btn-sm" id="btn-download-template">
+                <i class="bi bi-download me-1"></i> Unduh Template
+              </button>
+            </div>
+            
+            <div class="mb-3">
+              <label for="upload-file-input" class="form-label">Pilih File (.xlsx / .csv)</label>
+              <input class="form-control" type="file" id="upload-file-input" accept=".xlsx, .xls, .csv">
+            </div>
+            
+            <div class="alert alert-info py-2 px-3 text-xs mb-0">
+              <i class="bi bi-info-circle me-1"></i> <strong>Aturan:</strong> Nama operator harus sesuai dengan master data. Panjang kode string harus cocok dengan jumlah hari dalam periode aktif (30/31 hari).
+            </div>
+          </div>
+
+          <!-- Step 2: Upload Preview & Validation -->
+          <div id="upload-step-2" class="d-none">
+            <h6 class="mb-3">Preview & Validasi Data (<span id="preview-count">0</span> Operator)</h6>
+            <div class="table-responsive" style="max-height: 350px;">
+              <table class="table table-sm table-striped table-hover text-xs border">
+                <thead class="table-light sticky-top">
+                  <tr>
+                    <th>Baris</th>
+                    <th>Nama Operator</th>
+                    <th>Unit</th>
+                    <th>String Kode</th>
+                    <th>Validasi</th>
+                  </tr>
+                </thead>
+                <tbody id="upload-preview-body">
+                  <!-- Injected via JS -->
+                </tbody>
+              </table>
+            </div>
+            <div id="upload-summary-validation" class="mt-3">
+              <!-- Summary of warnings/errors -->
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-top-0 pt-0">
+          <button type="button" class="btn btn-light" id="btn-upload-cancel" data-bs-dismiss="modal">Tutup</button>
+          <button type="button" class="btn btn-primary d-none" id="btn-upload-submit">
+            <i class="bi bi-cloud-arrow-up-fill me-1"></i> Simpan Absensi
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 1060;">
+    <div id="liveToast" class="toast align-items-center text-white border-0" role="alert" aria-live="assertive" aria-atomic="true">
+      <div class="d-flex">
+        <div class="toast-body d-flex align-items-center gap-2">
+          <i class="bi bi-check-circle-fill" id="toast-icon"></i>
+          <span id="toast-message">Notifikasi</span>
+        </div>
+        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- SheetJS (XLSX) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  
+  <!-- Bootstrap 5 Bundle (with Popper) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+
+  <!-- Google Apps Script Environment Mocks (for Local Development) -->
+  <script src="mock-api.js"></script>
+  
+  <!-- Core Application Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>

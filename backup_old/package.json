@@ -1,0 +1,13 @@
+{
+  "name": "absensi-operator",
+  "version": "1.0.0",
+  "description": "Aplikasi Rekapitulasi Absensi Operator berbasis Google Apps Script + Google Spreadsheet",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}
