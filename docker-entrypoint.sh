@@ -64,8 +64,9 @@ done
 echo "Running migrations..."
 php artisan migrate --force
 
-# Jalankan server Laravel
-echo "Starting Laravel Artisan serve..."
+# Jalankan server Laravel dengan multi-threading agar tidak lemot
+echo "Starting Laravel Artisan serve with multi-workers..."
+export PHP_CLI_SERVER_WORKERS=10
 php artisan serve --host=0.0.0.0 --port=8000 &
 
 # Jaga agar container tetap berjalan
