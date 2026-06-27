@@ -133,24 +133,34 @@ class DemoSeeder extends Seeder
             ]);
 
             // Add details for S/I/A if any
+            $usedDays = [];
+            
+            $getUniqueDay = function() use (&$usedDays) {
+                $day = rand(0, 29);
+                while (in_array($day, $usedDays)) {
+                    $day = rand(0, 29);
+                }
+                $usedDays[] = $day;
+                return $day;
+            };
+
             if ($s > 0) {
-                // Find a random day to assign
                 $absensi->keteranganAbsensis()->create([
-                    'tanggal' => Carbon::create(2025, 9, 21)->addDays(rand(0, 29))->toDateString(),
+                    'tanggal' => Carbon::create(2025, 9, 21)->addDays($getUniqueDay())->toDateString(),
                     'kode' => 'S',
                     'alasan' => 'Sakit demam',
                 ]);
             }
             if ($i_val > 0) {
                 $absensi->keteranganAbsensis()->create([
-                    'tanggal' => Carbon::create(2025, 9, 21)->addDays(rand(0, 29))->toDateString(),
+                    'tanggal' => Carbon::create(2025, 9, 21)->addDays($getUniqueDay())->toDateString(),
                     'kode' => 'I',
                     'alasan' => 'Urusan keluarga',
                 ]);
             }
             if ($a > 0) {
                 $absensi->keteranganAbsensis()->create([
-                    'tanggal' => Carbon::create(2025, 9, 21)->addDays(rand(0, 29))->toDateString(),
+                    'tanggal' => Carbon::create(2025, 9, 21)->addDays($getUniqueDay())->toDateString(),
                     'kode' => 'A',
                     'alasan' => 'Mangkir tanpa kabar',
                 ]);
