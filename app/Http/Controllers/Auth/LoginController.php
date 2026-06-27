@@ -35,7 +35,7 @@ class LoginController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
 
-            return redirect('/');
+            return Inertia::location(secure_url('/'));
         }
 
         throw ValidationException::withMessages([
@@ -53,6 +53,6 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/login');
+        return Inertia::location(secure_url('/login'));
     }
 }
