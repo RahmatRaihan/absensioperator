@@ -47,12 +47,6 @@ if [ ! -f "vendor/autoload.php" ]; then
     composer install --no-interaction --prefer-dist
 fi
 
-# Pastikan folder node_modules terinstal (cek .package-lock.json karena volume bisa kosong)
-if [ ! -f "node_modules/.package-lock.json" ]; then
-    echo "Installing NPM dependencies..."
-    npm install
-fi
-
 # Pastikan berkas .env ada
 if [ ! -f ".env" ]; then
     echo "Creating .env file..."
@@ -70,10 +64,9 @@ done
 echo "Running migrations..."
 php artisan migrate --force
 
-# Jalankan server Laravel & Vite secara konkuren
-echo "Starting Laravel Artisan serve and Vite dev server..."
+# Jalankan server Laravel
+echo "Starting Laravel Artisan serve..."
 php artisan serve --host=0.0.0.0 --port=8000 &
-npm run dev -- --host &
 
 # Jaga agar container tetap berjalan
 wait
