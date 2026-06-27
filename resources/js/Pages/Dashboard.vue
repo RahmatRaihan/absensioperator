@@ -150,7 +150,7 @@ const formatTimeAgo = (dateStr) => {
             <div class="text-sm font-semibold text-gray-700 flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary-500">date_range</span>
                 <span>Periode Tinjauan: <span class="text-primary-600 font-bold">{{ activePeriode?.label }}</span></span>
-                <span class="text-xs text-gray-400 font-mono" v-if="activePeriode">
+                <span class="text-xs text-gray-400 font-mono" v-if="activePeriode?.tgl_mulai">
                     ({{ new Date(activePeriode.tgl_mulai).toLocaleDateString('id-ID', {day: '2-digit', month: 'short'}) }} - {{ new Date(activePeriode.tgl_selesai).toLocaleDateString('id-ID', {day: '2-digit', month: 'short'}) }})
                 </span>
             </div>
