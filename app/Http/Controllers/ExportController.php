@@ -314,7 +314,7 @@ class ExportController extends Controller
                 $sheet->setCellValue('A' . $rowIdx, $no);
                 $sheet->setCellValue('B' . $rowIdx, $team);
                 $sheet->setCellValue('C' . $rowIdx, $rec->operator->nama);
-                $sheet->setCellValue('D' . $rowIdx, $rec->operator->keterangan); // Discipline column maps to operator's keterangan
+                $sheet->setCellValue('D' . $rowIdx, $rec->operator->unit); // Discipline column maps to operator's unit
 
                 // Set row height for data
                 $sheet->getRowDimension($rowIdx)->setRowHeight(20);
